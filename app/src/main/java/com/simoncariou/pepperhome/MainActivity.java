@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity{
     ********************/
 
     //log tag
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = "PepperHome_MainActivity";
 
     //retrofit object built in the RetrofitInstance class
     private static Retrofit retrofitClient = null;
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         //parse the file to get the api key. Will be in .gitignore for security purposes
         retrieveApiKeyFromFile();
+        //create the retrofit instance and the API via the interface
         createInstances();
     }
 
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity{
         //initialize with the off state
         //@TODO intialize with the current state. Implement the GET req in the LightService
         lightStatus = new Action(false, 254, 8402, 140);
-        //execute();
+        execute();
     }
 
     public void execute(){
