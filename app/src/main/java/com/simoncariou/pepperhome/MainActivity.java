@@ -20,11 +20,11 @@ public class MainActivity extends AppCompatActivity{
     //log tag
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    //retrofit object built in the RetrofitIntance class
+    //retrofit object built in the RetrofitInstance class
     private static Retrofit retrofitClient = null;
 
-    //@TODO remove from there, not security compliant.
-    private final static String API_KEY = "sike";
+    //Will be initialized after.
+    private static String API_KEY = "";
 
     //used in the API REST calls
     int statusCode = 0;
@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //parse the file to get the api key. Will be in .gitignore for security purposes
+        retrieveApiKeyFromFile();
         createInstances();
     }
 
@@ -55,6 +57,15 @@ public class MainActivity extends AppCompatActivity{
     /********************
      **FUNCTIONS**
      ********************/
+        
+    //get the api key as a string from a file located
+    private void retrieveApiKeyFromFile(){
+        try {
+            API_KEY = FileParser.getApiKey(getResources().openRawResource(R.raw.apikey));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     // This method create an instance of Retrofit
     // set the base url
     public void createInstances(){
@@ -63,11 +74,11 @@ public class MainActivity extends AppCompatActivity{
             //retrofit = retrofitClient.create(RetrofitInstance.class);
         }
         lService = retrofitClient.create(LightService.class);
-        
+
         //initialize with the off state
         //@TODO intialize with the current state. Implement the GET req in the LightService
         lightStatus = new Action(false, 254, 8402, 140);
-        execute();
+        //execute();
     }
 
     public void execute(){
