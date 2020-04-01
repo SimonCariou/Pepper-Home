@@ -1,4 +1,4 @@
-package com.simoncariou.pepperhome;
+package com.simoncariou.pepperhome.api;
 
 import java.security.cert.CertificateException;
 

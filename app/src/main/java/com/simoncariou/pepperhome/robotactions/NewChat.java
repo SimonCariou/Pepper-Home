@@ -11,6 +11,7 @@ import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.simoncariou.pepperhome.R;
+import com.simoncariou.pepperhome.api.ApiClient;
 
 public class NewChat {
     private QiContext mqiContext;
@@ -18,11 +19,13 @@ public class NewChat {
     private Topic topLight = null;
     public Chat chat = null;
     private String TAG = "PepperHome_Chat";
+    private ApiClient apiclient = null;
 
     //constructor to get the context from the mainactivity
-    public NewChat(QiContext qictxt) {
+    public NewChat(QiContext qictxt, ApiClient apiclient) {
         Log.i(TAG, "Creating the NewChat custom object");
-        mqiContext = qictxt;
+        this.mqiContext = qictxt;
+        this.apiclient = apiclient;
         initAndBuildChat();
     }
 
@@ -45,6 +48,7 @@ public class NewChat {
 
     public Future<Void> run(){
         Log.i(TAG, "Chat running.");
+        apiclient.execute(true);
         return chat.async().run();
     }
 

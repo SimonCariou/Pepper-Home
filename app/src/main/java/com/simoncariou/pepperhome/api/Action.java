@@ -1,4 +1,4 @@
-package com.simoncariou.pepperhome;
+package com.simoncariou.pepperhome.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
