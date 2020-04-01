@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity{
     private static Retrofit retrofitClient = null;
 
     //Will be initialized after.
-    private static String API_KEY = "";
+    private String API_KEY = "";
 
     //used in the API REST calls
     int statusCode = 0;
@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //parse the file to get the api key. Will be in .gitignore for security purposes
-        retrieveApiKeyFromFile();
+        //@TODO doesn't work when using string gotten via a function in the api call
+        API_KEY = retrieveApiKeyFromFile();
         //create the retrofit instance and the API via the interface
         createInstances();
     }
@@ -59,13 +59,15 @@ public class MainActivity extends AppCompatActivity{
      **FUNCTIONS**
      ********************/
         
-    //get the api key as a string from a file located
-    private void retrieveApiKeyFromFile(){
+    //get the api key as a string from a file located in the raw resources folder
+    private String retrieveApiKeyFromFile(){
+        String key = "";
         try {
-            API_KEY = FileParser.getApiKey(getResources().openRawResource(R.raw.apikey));
+            key = FileParser.getApiKey(getResources().openRawResource(R.raw.apikey));
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return key;
     }
     // This method create an instance of Retrofit
     // set the base url
@@ -84,8 +86,9 @@ public class MainActivity extends AppCompatActivity{
 
     public void execute(){
         //turn off the lights. false
-        prepareLightsStatusOn(false);
-        Call<List<ResponseBody>> putDataToHueBridgeCall = lService.turnLightsOnOff(API_KEY, "1", lightStatus);
+        prepareLightsStatusOn(true);
+        //workaround to better api key management. Hopefully some day I'll be able to not have it in clear text on github.
+        Call<List<ResponseBody>> putDataToHueBridgeCall = lService.turnLightsOnOff("xxx", "1", lightStatus);
         putDataToHueBridgeCall.enqueue(new Callback<List<ResponseBody>>() {
             @Override
             public void onResponse(Call<List<ResponseBody>> call, Response<List<ResponseBody>> response) {
