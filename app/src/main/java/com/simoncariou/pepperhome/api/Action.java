@@ -1,11 +1,12 @@
-package com.simoncariou.pepperhome;
+package com.simoncariou.pepperhome.api;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Lights {
+public class Action {
+
     //lightStatus will be gotten from the tts
-    public Lights(Boolean on, Integer bri, Integer hue, Integer sat){
+    public Action(Boolean on, Integer bri, Integer hue, Integer sat){
         this.on = on;
         this.bri = bri;
         this.hue = hue;
