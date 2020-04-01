@@ -5,6 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.aldebaran.qi.sdk.Qi;
+import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.QiSDK;
+import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -12,10 +18,12 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
     /********************
     **CLASS VARIABLES**
     ********************/
+    //global reference to the qicontext
+    private QiContext mqiContext = null;
 
     //log tag
     private static final String TAG = "PepperHome_MainActivity";
@@ -42,18 +50,37 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        QiSDK.register(this,this);
         //@TODO doesn't work when using string gotten via a function in the api call
         API_KEY = retrieveApiKeyFromFile();
         //create the retrofit instance and the API via the interface
         createInstances();
     }
 
+    @Override
+    protected void onDestroy() {
+        QiSDK.unregister(this);
+        super.onDestroy();
+    }
+
     /*********************
      **ROBOTIC CALLBACKS**
      *********************/
 
-    //@TODO make the app into a robotic app using the qiSDK
+    @Override
+    public void onRobotFocusGained(QiContext qiContext) {
+        
+    }
 
+    @Override
+    public void onRobotFocusLost() {
+
+    }
+
+    @Override
+    public void onRobotFocusRefused(String reason) {
+
+    }
 
     /********************
      **FUNCTIONS**
@@ -110,4 +137,5 @@ public class MainActivity extends AppCompatActivity{
     public void prepareLightsStatusOn(Boolean status){
         lightStatus.setOn(status);
     }
+
 }
