@@ -1,15 +1,13 @@
 package com.simoncariou.pepperhome;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 import android.util.Log;
 
-import com.aldebaran.qi.sdk.Qi;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.simoncariou.pepperhome.robotactions.NewChat;
 
 import java.util.List;
 
@@ -69,17 +67,20 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     @Override
     public void onRobotFocusGained(QiContext qiContext) {
-        
+        Log.d(TAG, "onRobotFocusGained");
+        mqiContext = qiContext;
+        NewChat chat = new NewChat(mqiContext);
+        chat.run();
     }
 
     @Override
     public void onRobotFocusLost() {
-
+        Log.d(TAG, "onRobotFocusLost");
     }
 
     @Override
     public void onRobotFocusRefused(String reason) {
-
+        Log.d(TAG, "onRobotFocusRefused");
     }
 
     /********************
@@ -115,7 +116,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         //turn off the lights. false
         prepareLightsStatusOn(true);
         //workaround to better api key management. Hopefully some day I'll be able to not have it in clear text on github.
-        Call<List<ResponseBody>> putDataToHueBridgeCall = lService.turnLightsOnOff("xxx", "1", lightStatus);
+        Call<List<ResponseBody>> putDataToHueBridgeCall = lService.turnLightsOnOff("xxx", "9086", lightStatus);
         putDataToHueBridgeCall.enqueue(new Callback<List<ResponseBody>>() {
             @Override
             public void onResponse(Call<List<ResponseBody>> call, Response<List<ResponseBody>> response) {
