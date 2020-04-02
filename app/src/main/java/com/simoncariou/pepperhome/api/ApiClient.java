@@ -72,7 +72,7 @@ public class ApiClient {
 
         //initialize with the off state
         //@TODO intialize with the current state. Implement the GET req in the LightService
-        lightStatus = new Action(false, 2, 2, 2);
+        lightStatus = new Action(false, 254, 8785, 107);
     }
 
     //execute the request with true or false:

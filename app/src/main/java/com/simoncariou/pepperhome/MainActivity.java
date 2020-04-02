@@ -63,9 +63,4 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusRefused(String reason) {
         Log.d(TAG, "onRobotFocusRefused");
     }
-
-    /********************
-     **FUNCTIONS**
-     ********************/
-
 }

@@ -1,6 +1,3 @@
 topic: ~topic_light_handling()
-# Defining extra concepts out of words or group of words
-concept:(hello) [hello hi hey "good morning" greetings]
 
-# Replying to speech
-u:(~hello) ~hello
+u:(Turn _[on off] the lights) Okay ^execute(api_call_executor, $1)
