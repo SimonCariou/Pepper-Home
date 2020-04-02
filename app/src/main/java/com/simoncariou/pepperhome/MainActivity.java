@@ -8,6 +8,8 @@ import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
+import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayPosition;
+import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
 import com.simoncariou.pepperhome.api.*;
 
 import com.simoncariou.pepperhome.robotactions.NewChat;
@@ -32,6 +34,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         QiSDK.register(this,this);
+        setSpeechBar();
         this.apiclient = new ApiClient(this);
     }
 
@@ -62,5 +65,14 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     @Override
     public void onRobotFocusRefused(String reason) {
         Log.d(TAG, "onRobotFocusRefused");
+    }
+
+    /********************
+     **CUSTOM FUNCTIONS**
+     ********************/
+
+    private void setSpeechBar(){
+        setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.IMMERSIVE);
+        setSpeechBarDisplayPosition(SpeechBarDisplayPosition.BOTTOM);
     }
 }
