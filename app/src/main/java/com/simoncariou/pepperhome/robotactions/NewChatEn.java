@@ -11,36 +11,44 @@ import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
-import com.simoncariou.pepperhome.R;
+import com.aldebaran.qi.sdk.object.locale.Language;
+import com.aldebaran.qi.sdk.object.locale.Locale;
+import com.aldebaran.qi.sdk.object.locale.Region;
 import com.simoncariou.pepperhome.api.ApiClient;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class NewChat {
+public class NewChatEn {
     private QiContext mqiContext;
     private QiChatbot qiChatBot = null;
     public Chat chat = null;
     private String TAG = "PepperHome_Chat";
-    private ApiClient apiclient = null;
     private ApiCallExecutor apiCallExecutor = null;
 
+    private String topicNameEn = null;
+    private Locale  localeEn = null;
+
     //constructor to get the context from the mainactivity
-    public NewChat(QiContext qictxt, ApiClient apiclient, QiChatbot qiChatBot, ApiCallExecutor apiCallExecutor) {
+    public NewChatEn(QiContext qictxt, QiChatbot qiChatBot, ApiCallExecutor apiCallExecutor) {
         Log.i(TAG, "Creating the NewChat custom object");
         this.mqiContext = qictxt;
-        this.apiclient = apiclient;
 
         this.qiChatBot = qiChatBot;
         this.apiCallExecutor = apiCallExecutor;
 
-        initAndBuildChat();
+        //init topic names and locales; English and French
+        this.topicNameEn = "topic_light_handling-en.top";
+        this.localeEn =  new Locale(Language.ENGLISH, Region.UNITED_STATES);
+
+        //in english here
+        initAndBuildChatEn();
     }
 
-    private void initAndBuildChat(){
-        Log.i(TAG, "Building the topic");
+    private void initAndBuildChatEn(){
+        Log.i(TAG, "Building the topic " + this.topicNameEn);
         Topic topLight = TopicBuilder.with(mqiContext)
-                .withResource(R.raw.topic_light_handling) //@TODO: move to assets and add french topic
+                .withAsset(this.topicNameEn)
                 .build();
 
         Log.i(TAG, "Building the qiChatBot");
@@ -61,19 +69,12 @@ public class NewChat {
         Log.i(TAG, "Building the chat");
         chat = ChatBuilder.with(mqiContext)
                 .withChatbot(qiChatBot)
+                .withLocale(this.localeEn)
                 .build();
     }
 
     public Future<Void> run(){
         Log.i(TAG, "Chat running.");
         return chat.async().run();
-    }
-
-    public void cancelChat(Future<Void> chatToCancel){
-        if(chatToCancel == null){
-            Log.i(TAG, "No chat is running.");
-        }
-        Log.i(TAG, "Cancelling the chat.");
-        chatToCancel.requestCancellation();
     }
 }

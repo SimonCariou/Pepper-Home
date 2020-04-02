@@ -1,21 +1,23 @@
 package com.simoncariou.pepperhome;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 
+import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayPosition;
 import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
-import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
+
 import com.simoncariou.pepperhome.api.*;
 
 import com.simoncariou.pepperhome.robotactions.ApiCallExecutor;
-import com.simoncariou.pepperhome.robotactions.NewChat;
+import com.simoncariou.pepperhome.robotactions.NewChatEn;
+import com.simoncariou.pepperhome.robotactions.NewChatFr;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
     /********************
@@ -28,8 +30,19 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public QiChatbot qiChatBot = null;
     public ApiCallExecutor apicallexecutor = null;
 
+    //to have the ability to cancel them when we need
+    NewChatEn chatEn = null;
+    NewChatFr chatFr = null;
+
+    Future<Void> chatEnFut = null;
+    Future<Void> chatFrFut = null;
+
     //log tag
     private static final String TAG = "PepperHome_MainActivity";
+
+    //UI COMPONENTS
+    private Button btnEnglishChat = null;
+    private Button btnFrenchChat = null;
 
 
     /*******************************
@@ -42,6 +55,20 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         QiSDK.register(this,this);
         setSpeechBar();
         this.apiclient = new ApiClient(this);
+
+        //ini the buttons and their listeners
+        btnEnglishChat = findViewById(R.id.btnEnglish);
+        btnFrenchChat = findViewById(R.id.btnFrench);
+
+        btnEnglishChat.setOnClickListener(v -> chatEnFut = chatEn.run());
+        btnFrenchChat.setOnClickListener(v -> chatFrFut = chatFr.run());
+
+        //deactivate the buttons avant que les objets chat ne soient buildés, dans onRobotFocusGained:
+        btnEnglishChat.setClickable(false);
+        btnEnglishChat.setAlpha(0.5f);
+
+        btnFrenchChat.setClickable(false);
+        btnFrenchChat.setAlpha(0.5f);
     }
 
     @Override
@@ -61,9 +88,15 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         //instantiating the reference to give to the chat.
         apicallexecutor = new ApiCallExecutor(this.mqiContext, this.apiclient);
 
-        //passing the apiclient as the rest req will be executed via the chat.
-        NewChat chat = new NewChat(mqiContext, apiclient, qiChatBot, apicallexecutor);
-        chat.run();
+        chatEn = new NewChatEn(mqiContext, qiChatBot, apicallexecutor);
+        chatFr = new NewChatFr(mqiContext, qiChatBot, apicallexecutor);
+
+        btnEnglishChat.setClickable(true);
+        btnEnglishChat.setAlpha(1f);
+
+        btnFrenchChat.setClickable(true);
+        btnFrenchChat.setAlpha(1f);
+
     }
 
     @Override
