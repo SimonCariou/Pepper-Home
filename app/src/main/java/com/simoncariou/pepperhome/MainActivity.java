@@ -10,8 +10,11 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayPosition;
 import com.aldebaran.qi.sdk.design.activity.conversationstatus.SpeechBarDisplayStrategy;
+import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
+import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.simoncariou.pepperhome.api.*;
 
+import com.simoncariou.pepperhome.robotactions.ApiCallExecutor;
 import com.simoncariou.pepperhome.robotactions.NewChat;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
@@ -21,6 +24,9 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     //global reference to the qicontext
     private QiContext mqiContext = null;
     private ApiClient apiclient = null;
+    //to have a referecne to them  in the running activity. WA call request could not be handled.
+    public QiChatbot qiChatBot = null;
+    public ApiCallExecutor apicallexecutor = null;
 
     //log tag
     private static final String TAG = "PepperHome_MainActivity";
@@ -52,8 +58,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusGained(QiContext qiContext) {
         Log.d(TAG, "onRobotFocusGained");
         mqiContext = qiContext;
+        //instantiating the reference to give to the chat.
+        apicallexecutor = new ApiCallExecutor(this.mqiContext, this.apiclient);
+
         //passing the apiclient as the rest req will be executed via the chat.
-        NewChat chat = new NewChat(mqiContext, apiclient);
+        NewChat chat = new NewChat(mqiContext, apiclient, qiChatBot, apicallexecutor);
         chat.run();
     }
 
