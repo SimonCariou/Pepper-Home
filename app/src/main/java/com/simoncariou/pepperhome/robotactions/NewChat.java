@@ -8,15 +8,18 @@ import com.aldebaran.qi.sdk.builder.ChatBuilder;
 import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
+import com.aldebaran.qi.sdk.object.conversation.QiChatExecutor;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.simoncariou.pepperhome.R;
 import com.simoncariou.pepperhome.api.ApiClient;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class NewChat {
     private QiContext mqiContext;
     private QiChatbot qiChatBot = null;
-    private Topic topLight = null;
     public Chat chat = null;
     private String TAG = "PepperHome_Chat";
     private ApiClient apiclient = null;
@@ -31,7 +34,7 @@ public class NewChat {
 
     private void initAndBuildChat(){
         Log.i(TAG, "Building the topic");
-        topLight = TopicBuilder.with(mqiContext)
+        Topic topLight = TopicBuilder.with(mqiContext)
                 .withResource(R.raw.topic_light_handling)
                 .build();
 
@@ -39,6 +42,14 @@ public class NewChat {
         qiChatBot = QiChatbotBuilder.with(mqiContext)
                 .withTopic(topLight)
                 .build();
+
+        Map<String, QiChatExecutor> executors = new HashMap<>();
+
+        // Map the executor name from the topic to our qiChatExecutor
+        executors.put("api_call_executor", new ApiCallExecutor(this.mqiContext, this.apiclient));
+
+        // Set the executors to the qiChatbot
+        qiChatBot.setExecutors(executors);
 
         Log.i(TAG, "Building the chat");
         chat = ChatBuilder.with(mqiContext)
@@ -48,7 +59,6 @@ public class NewChat {
 
     public Future<Void> run(){
         Log.i(TAG, "Chat running.");
-        apiclient.execute(true);
         return chat.async().run();
     }
 

@@ -14,7 +14,7 @@ public class FileParser {
     private Context context;
     private AssetManager assetManager;
 
-    public FileParser(Context ctxt){
+    FileParser(Context ctxt){
         Log.i(TAG, "FileParser constructor");
         this.context = ctxt;
         this.assetManager = this.context.getAssets();
