@@ -55,11 +55,11 @@ public class ApiCallExecutor extends BaseQiChatExecutor {
         //Run the action asynchronously.
         this.animateDab.async().run();
 
-        if(params.get(0).toLowerCase().equals("on")) {
+        if(params.get(0).toLowerCase().equals("on") || params.get(0).toLowerCase().equals("allume")) {
             lightStatus = true;
         }
 
-        else if (params.get(0).toLowerCase().equals("off")) {
+        else if (params.get(0).toLowerCase().equals("off") || params.get(0).toLowerCase().contains("tein")) {
             lightStatus = false;
         }
         //executing the api call to the hue bridge

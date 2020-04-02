@@ -1,0 +1,3 @@
+topic: ~topic_light_handling()
+
+u:(_[allume éteins] la lumière) D'accord ^execute(api_call_executor, $1)
