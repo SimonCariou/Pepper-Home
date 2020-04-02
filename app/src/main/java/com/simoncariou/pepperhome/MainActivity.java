@@ -3,6 +3,7 @@ package com.simoncariou.pepperhome;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
@@ -43,6 +44,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     //UI COMPONENTS
     private Button btnEnglishChat = null;
     private Button btnFrenchChat = null;
+    private TextView tvChatLanguageStatus = null;
 
 
     /*******************************
@@ -60,8 +62,24 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         btnEnglishChat = findViewById(R.id.btnEnglish);
         btnFrenchChat = findViewById(R.id.btnFrench);
 
-        btnEnglishChat.setOnClickListener(v -> chatEnFut = chatEn.run());
-        btnFrenchChat.setOnClickListener(v -> chatFrFut = chatFr.run());
+        //init the textView to say the langauge of the chat that is running
+        tvChatLanguageStatus = findViewById(R.id.tvInfoChatLanguage);
+
+        btnEnglishChat.setOnClickListener(v -> {
+            chatEnFut = chatEn.run();
+            tvChatLanguageStatus.setText("Chat running in English.\nSay for example: \"Turn on/off the lights\"");
+            //disable the other button to show the language
+            btnFrenchChat.setClickable(false);
+            btnFrenchChat.setAlpha(0.5f);
+        });
+
+        btnFrenchChat.setOnClickListener(v -> {
+            chatFrFut = chatFr.run();
+            tvChatLanguageStatus.setText("Chat en Français.\nDites par exemple: \"Allume/éteins la lumière\"");
+            //disable the other button to show the language
+            btnEnglishChat.setClickable(false);
+            btnEnglishChat.setAlpha(0.5f);
+        });
 
         //deactivate the buttons avant que les objets chat ne soient buildés, dans onRobotFocusGained:
         btnEnglishChat.setClickable(false);
