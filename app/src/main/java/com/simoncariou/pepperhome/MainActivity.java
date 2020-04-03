@@ -16,6 +16,8 @@ import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.simoncariou.pepperhome.api.*;
 
 import com.simoncariou.pepperhome.robotactions.ApiCallExecutor;
+import com.simoncariou.pepperhome.robotactions.ApiCallExecutorEn;
+import com.simoncariou.pepperhome.robotactions.ApiCallExecutorFr;
 import com.simoncariou.pepperhome.robotactions.AutomaticLanguageSelector;
 import com.simoncariou.pepperhome.robotactions.NewChatEn;
 import com.simoncariou.pepperhome.robotactions.NewChatFr;
@@ -29,7 +31,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private ApiClient apiclient = null;
     //to have a referecne to them  in the running activity. WA call request could not be handled.
     public QiChatbot qiChatBot = null;
-    public ApiCallExecutor apicallexecutor = null;
+    public ApiCallExecutorFr apicallexecutorFr = null;
+    public ApiCallExecutorEn apicallexecutorEn = null;
 
     //to have the ability to cancel them when we need
     NewChatEn chatEn = null;
@@ -88,7 +91,8 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         mqiContext = qiContext;
 
         //instantiating the reference to give to the chat.
-        apicallexecutor = new ApiCallExecutor(this.mqiContext, this.apiclient);
+        apicallexecutorEn = new ApiCallExecutorEn(this.mqiContext, this.apiclient);
+        apicallexecutorFr = new ApiCallExecutorFr(this.mqiContext, this.apiclient);
 
         //set the robot language for the entire App
         if(this.languageSelector != null){
@@ -97,11 +101,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
         //check if the chat objects needs to be re-instantiated
         if (this.robotLanguage.equals("French") && this.chatFr == null){
-            Log.d(TAG, "this.chatFr == null");
+            Log.d(TAG, "this.chatFr == null && robotLanguage == French");
             this.chatFr = createNewInstanceChatFr();
         }
         if (this.robotLanguage.equals("English") && this.chatEn == null){
-            Log.d(TAG, "this.chatEn == null");
+            Log.d(TAG, "this.chatEn == null && robotLanguage == English");
             this.chatEn = createNewInstanceChatEn();
         }
 
@@ -142,12 +146,12 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     }
 
     private NewChatEn createNewInstanceChatEn(){
-        NewChatEn chatEn_temp = new NewChatEn(mqiContext, qiChatBot, apicallexecutor);
+        NewChatEn chatEn_temp = new NewChatEn(mqiContext, qiChatBot, apicallexecutorEn);
         return chatEn_temp;
     }
 
     private NewChatFr createNewInstanceChatFr(){
-        NewChatFr chatFr_temp = new NewChatFr(mqiContext, qiChatBot, apicallexecutor);
+        NewChatFr chatFr_temp = new NewChatFr(mqiContext, qiChatBot, apicallexecutorFr);
         return chatFr_temp;
     }
 }
