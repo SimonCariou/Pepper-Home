@@ -2,7 +2,6 @@ package com.simoncariou.pepperhome;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.aldebaran.qi.Future;
@@ -17,6 +16,7 @@ import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.simoncariou.pepperhome.api.*;
 
 import com.simoncariou.pepperhome.robotactions.ApiCallExecutor;
+import com.simoncariou.pepperhome.robotactions.AutomaticLanguageSelector;
 import com.simoncariou.pepperhome.robotactions.NewChatEn;
 import com.simoncariou.pepperhome.robotactions.NewChatFr;
 
@@ -42,9 +42,11 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private static final String TAG = "PepperHome_MainActivity";
 
     //UI COMPONENTS
-    private Button btnEnglishChat = null;
-    private Button btnFrenchChat = null;
     private TextView tvChatLanguageStatus = null;
+
+    //robot language gotten via a qi session
+    private AutomaticLanguageSelector languageSelector = null;
+    public String robotLanguage = "";
 
 
     /*******************************
@@ -58,40 +60,21 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
         setSpeechBar();
         this.apiclient = new ApiClient(this);
 
-        //ini the buttons and their listeners
-        btnEnglishChat = findViewById(R.id.btnEnglish);
-        btnFrenchChat = findViewById(R.id.btnFrench);
-
         //init the textView to say the langauge of the chat that is running
         tvChatLanguageStatus = findViewById(R.id.tvInfoChatLanguage);
 
-        btnEnglishChat.setOnClickListener(v -> {
-            chatEnFut = chatEn.run();
-            tvChatLanguageStatus.setText("Chat running in English.\nSay for example: \"Turn on/off the lights\"");
-            //disable the other button to show the language
-            btnFrenchChat.setClickable(false);
-            btnFrenchChat.setAlpha(0.5f);
-        });
-
-        btnFrenchChat.setOnClickListener(v -> {
-            chatFrFut = chatFr.run();
-            tvChatLanguageStatus.setText("Chat en Français.\nDites par exemple: \"Allume/éteins la lumière\"");
-            //disable the other button to show the language
-            btnEnglishChat.setClickable(false);
-            btnEnglishChat.setAlpha(0.5f);
-        });
-
-        //deactivate the buttons avant que les objets chat ne soient buildés, dans onRobotFocusGained:
-        btnEnglishChat.setClickable(false);
-        btnEnglishChat.setAlpha(0.5f);
-
-        btnFrenchChat.setClickable(false);
-        btnFrenchChat.setAlpha(0.5f);
     }
 
     @Override
+    protected void onResume() {
+        this.languageSelector = new AutomaticLanguageSelector();
+        super.onResume();
+    }
+
+
+        @Override
     protected void onDestroy() {
-        QiSDK.unregister(this);
+        QiSDK.unregister(this, this);
         super.onDestroy();
     }
 
@@ -103,18 +86,40 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     public void onRobotFocusGained(QiContext qiContext) {
         Log.d(TAG, "onRobotFocusGained");
         mqiContext = qiContext;
+
         //instantiating the reference to give to the chat.
         apicallexecutor = new ApiCallExecutor(this.mqiContext, this.apiclient);
 
-        chatEn = new NewChatEn(mqiContext, qiChatBot, apicallexecutor);
-        chatFr = new NewChatFr(mqiContext, qiChatBot, apicallexecutor);
+        //set the robot language for the entire App
+        if(this.languageSelector != null){
+            this.robotLanguage = this.languageSelector.getRobotLanguage();
+        }
 
-        btnEnglishChat.setClickable(true);
-        btnEnglishChat.setAlpha(1f);
+        //check if the chat objects needs to be re-instantiated
+        if (this.robotLanguage.equals("French") && this.chatFr == null){
+            Log.d(TAG, "this.chatFr == null");
+            this.chatFr = createNewInstanceChatFr();
+        }
+        if (this.robotLanguage.equals("English") && this.chatEn == null){
+            Log.d(TAG, "this.chatEn == null");
+            this.chatEn = createNewInstanceChatEn();
+        }
 
-        btnFrenchChat.setClickable(true);
-        btnFrenchChat.setAlpha(1f);
-
+        //run the appropriate chat based on the language
+        if (this.robotLanguage.equals("French")){
+            Log.d(TAG, "robotLanguage = " + this.robotLanguage);
+            this.chatFrFut = this.chatFr.run();
+            runOnUiThread(()->tvChatLanguageStatus.setText("Chat en Français.\nDites par exemple: \"Allume/éteins la lumière\""));
+        } else if (this.robotLanguage.equals("English")){
+            Log.d(TAG, "robotLanguage = " + this.robotLanguage);
+            this.chatEnFut = this.chatEn.run();
+            runOnUiThread(()->tvChatLanguageStatus.setText("Chat running in English.\nSay for example: \"Turn on/off the lights\""));
+        }//default behavior: english installed by default on the robot.
+        else {
+            Log.d(TAG, "robotLanguage = " + this.robotLanguage);
+            this.chatEnFut = this.chatEn.run();
+            runOnUiThread(()->tvChatLanguageStatus.setText("Chat running in English.\nSay for example: \"Turn on/off the lights\""));
+        }
     }
 
     @Override
@@ -134,5 +139,15 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
     private void setSpeechBar(){
         setSpeechBarDisplayStrategy(SpeechBarDisplayStrategy.IMMERSIVE);
         setSpeechBarDisplayPosition(SpeechBarDisplayPosition.BOTTOM);
+    }
+
+    private NewChatEn createNewInstanceChatEn(){
+        NewChatEn chatEn_temp = new NewChatEn(mqiContext, qiChatBot, apicallexecutor);
+        return chatEn_temp;
+    }
+
+    private NewChatFr createNewInstanceChatFr(){
+        NewChatFr chatFr_temp = new NewChatFr(mqiContext, qiChatBot, apicallexecutor);
+        return chatFr_temp;
     }
 }

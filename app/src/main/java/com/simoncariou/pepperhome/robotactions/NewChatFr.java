@@ -23,7 +23,7 @@ public class NewChatFr {
     private QiContext mqiContext;
     private QiChatbot qiChatBot = null;
     public Chat chat = null;
-    private String TAG = "PepperHome_Chat";
+    private String TAG = "PepperHome_Chat_French";
     private ApiCallExecutor apiCallExecutor = null;
 
     private String topicNameFr = null;
