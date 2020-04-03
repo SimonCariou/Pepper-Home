@@ -23,19 +23,19 @@ public class NewChatEn {
     private QiContext mqiContext;
     private QiChatbot qiChatBot = null;
     public Chat chat = null;
-    private String TAG = "PepperHome_Chat";
-    private ApiCallExecutor apiCallExecutor = null;
+    private String TAG = "PepperHome_Chat_English";
+    private ApiCallExecutorEn apiCallExecutorEn = null;
 
     private String topicNameEn = null;
     private Locale  localeEn = null;
 
     //constructor to get the context from the mainactivity
-    public NewChatEn(QiContext qictxt, QiChatbot qiChatBot, ApiCallExecutor apiCallExecutor) {
+    public NewChatEn(QiContext qictxt, QiChatbot qiChatBot, ApiCallExecutorEn apiCallExecutorEn) {
         Log.i(TAG, "Creating the NewChat custom object");
         this.mqiContext = qictxt;
 
         this.qiChatBot = qiChatBot;
-        this.apiCallExecutor = apiCallExecutor;
+        this.apiCallExecutorEn = apiCallExecutorEn;
 
         //init topic names and locales; English and French
         this.topicNameEn = "topic_light_handling-en.top";
@@ -61,7 +61,7 @@ public class NewChatEn {
 
         // Map the executor name from the topic to our qiChatExecutor
         //qichatexecutor referenced in the mainactivity to prevent the garbage collector from deleting the associated remoteObject
-        executors.put("api_call_executor", this.apiCallExecutor);
+        executors.put("api_call_executor_en", this.apiCallExecutorEn);
 
         // Set the executors to the qiChatbot
         qiChatBot.setExecutors(executors);
